@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"os"
 )
 
-const WEBHOOK_URL = "http://mattermost-web/hooks/5xbnbur3djyupcd69z5e1uk7pa"
+var WEBHOOK_URL = "http://mattermost-web/hooks/" + os.Getenv("WEBHOOK")
 const CORE_URL = "http://core:3000/images"
 
 func SendImageViaWebhook(image Image) bool {

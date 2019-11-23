@@ -94,6 +94,10 @@ services:
       - mattermost-web
     volumes:
       - ./mattermost-connector:/go/src/mattermost-connector
+    environment:
+      - WEBHOOK=8pf448j5stb3fbonqije8ym54c
+      - PREDICTION_KEY=284caa38d879463b90d0871031c19958
+      - ENDPOINT=https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/0c667159-2b5c-4449-8aa5-a670fb31edd8/classify/iterations/Iteration2/image
     working_dir: /go/src/mattermost-connector
     command: sh -c "go run *.go"
     ports:

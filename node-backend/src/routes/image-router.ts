@@ -52,9 +52,9 @@ export default class Router {
 
                 const options = {
                     method: 'POST',
-                    uri: `http://${process.env.AI}:${process.env.AI_PORT}/model/train`,
+                    uri: `http://${process.env.AI}:${process.env.AI_PORT}/model/predict`,
                     body: {
-                        id: image.id,
+                        id: image.id
                     },
                     json: true
                 };
@@ -103,9 +103,10 @@ export default class Router {
 
                 const options = {
                     method: 'POST',
-                    uri: `http://${process.env.AI}:${process.env.AI_PORT}/model/predict`,
+                    uri: `http://${process.env.AI}:${process.env.AI_PORT}/model/train`,
                     body: {
                         id: image.id,
+                        isCracked,
                     },
                     json: true
                 };
