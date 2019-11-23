@@ -20,10 +20,12 @@ predction_resource_id = os.getenv("PREDICTION_RESOURCE_ID")
 @app.route('/model/predict', methods=['POST'])
 def model_predict():
     r = request.get_json()
+    print(str(r))
     filename = r["id"]
     filepath = "/data/images/" + filename + ".jpg"
     cracked, uncracked = request_prediction(filepath, endpoint, prediction_key)
     cracked = int(cracked * 100)
+    print(cracked)
     return jsonify({
         "probability": cracked
     })

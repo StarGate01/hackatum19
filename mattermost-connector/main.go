@@ -26,5 +26,12 @@ func main() {
 	r.Post("/mattermost_callback", HandleCallbackFromMattermost)
 
 	log.Println("Mattermost-Connector started")
-	http.ListenAndServe(":80", r)
+	http.ListenAndServe(":80", logRequest(r))
+}
+
+func logRequest(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
+		handler.ServeHTTP(w, r)
+	})
 }
