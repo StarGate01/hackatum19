@@ -1,13 +1,10 @@
 import json
+import os
 
 from requests import Request, Session
 
 
-endpoint = "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/0c667159-2b5c-4449-8aa5-a670fb31edd8/classify/iterations/Iteration2/image"
-prediction_key = "284caa38d879463b90d0871031c19958"
-
-
-def request_prediction(file_path):
+def request_prediction(file_path, endpoint, prediction_key):
     # data = open('./persistent-data/images/201402014_LIMI_001255.jpg', 'rb').read()
     data = open(file_path, 'rb').read()
     s = Session()
