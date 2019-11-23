@@ -128,6 +128,7 @@ services:
     build: ./camera
     restart: always
     volumes:
+      - ./camera/main.py:/code/main.py:ro
       - ./persistent-data/mock:/data/mock:ro
     networks:
       - app
