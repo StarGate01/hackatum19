@@ -1,3 +1,4 @@
 ~*
 persistent-data/
 __pycache__
+mattermost.env
