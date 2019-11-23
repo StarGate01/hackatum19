@@ -4,6 +4,8 @@
 
 1. Fetch submodules: `git submodule update --init`
 
+2. Chmod: `chmod +x app.sh`
+
 2. Build: `./app.sh build`
 
 3. Deploy: `./app.sh up`
