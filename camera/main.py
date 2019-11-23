@@ -1,21 +1,39 @@
 #!/usr/bin/python3
 
 import sys, os
+import time
 from signal import *
+from os import listdir
+from os.path import isfile, join
 
-def trigger():
+imgs = []
+cidx = 0
+
+def trigger(img):
     print("Taking and sending picture: " + img)
 
 def main():
-    print("Camera mock started")
+    global cidx, imgs
+
+    imgs = [f for f in listdir("/data/mock") if isfile(join("/data/mock", f))]
+    print(str(len(imgs)) + " images found")
+    print("Camera mock started\n")
+    cidx = 0
+    while(True):
+        trigger(imgs[cidx])
+        cidx += 1
+        if(cidx >= len(imgs)):
+            cidx = 0
+        time.sleep(20)
 
 
 def sigusr(sig, frame):
-    trigger()
+    global cidx, imgs
+
+    print("SIGUSR: cidx=" + str(cidx))
+    trigger(imgs[cidx])
 
 if __name__ == '__main__':
-    signal(SIGUSR, core.siginth)
-    if(len(sys.argv) > 1 and sys.argv[1] == "trigger"):
-        trigger()
+    signal(SIGUSR1, sigusr)
     main()
     
