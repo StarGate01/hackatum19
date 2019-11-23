@@ -9,6 +9,7 @@ import (
 type Image struct {
 	ID          string `json:"id"`
 	Probability int    `json:"probability"`
+	Channel		string `json:"channel"`
 }
 
 type StatusRequest struct {

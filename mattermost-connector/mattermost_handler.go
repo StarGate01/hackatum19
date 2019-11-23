@@ -9,58 +9,64 @@ import (
 	"os"
 )
 
-var WEBHOOK_URL = "http://mattermost-web/hooks/" + os.Getenv("WEBHOOK")
+var WEBHOOK_URL_DETECTION = "http://mattermost-web/hooks/" + os.Getenv("WEBHOOK_DETECTION")
+var WEBHOOK_URL_ALERTS = "http://mattermost-web/hooks/" + os.Getenv("WEBHOOK_ALERTS")
 const CORE_URL = "http://core:3000/images"
 
 func SendImageViaWebhook(image Image) bool {
 	var mattermostWebHookRequest MattermostWebhookRequest
 	var mattermostAttachment MattermostAttachment
-
-	var mattermostActionYes MattermostAction
-	var mattermostIntegrationYes MattermostIntegration
-	var mattermostContextYes MattermostContext
-
-	var mattermostActionNo MattermostAction
-	var mattermostIntegrationNo MattermostIntegration
-	var mattermostContextNo MattermostContext
-
 	mattermostWebHookRequest.Text = ""
-	mattermostWebHookRequest.Channel = "detection"
 	mattermostWebHookRequest.Username = "Detection-Bot"
+	mattermostWebHookRequest.Channel = image.Channel
 
 	probCache := image.Probability + 1
 	log.Println(probCache)
 
 	mattermostAttachment.Pretext = ""
 	mattermostAttachment.Color = "#ff0000"
-	mattermostAttachment.Text = "You can decide whether the shown image is a defect or not using the buttons showed below. \n" +
-		"Please decide carefully, since your decision has impact on future detections.\n\n ** The picture shows " + strconv.Itoa(probCache) + "% likely a defect. **"
 	mattermostAttachment.ImageUrl = "http://localhost:9203/"+image.ID+".jpg"
-	mattermostAttachment.Title = "Defect Detection: Please help identify a defect: "
 
-	mattermostActionYes.Name = "Yes, it is a defect!"
-	mattermostActionNo.Name = "No, is isn't a defect!"
+	if(image.Channel == "detection") {
+		var mattermostActionYes MattermostAction
+		var mattermostIntegrationYes MattermostIntegration
+		var mattermostContextYes MattermostContext
+		var mattermostActionNo MattermostAction
+		var mattermostIntegrationNo MattermostIntegration
+		var mattermostContextNo MattermostContext
 
-	mattermostIntegrationYes.Url = "http://mattermost-connector/mattermost_callback"
-	mattermostIntegrationNo.Url = "http://mattermost-connector/mattermost_callback"
+		mattermostAttachment.Text = "You can decide whether the shown image is a defect or not using the buttons showed below. \n" +
+			"Please decide carefully, since your decision has impact on future detections.\n\n ** The picture shows " + strconv.Itoa(probCache) + "% likely a defect. **"
+		mattermostAttachment.Title = "Defect Detection: Please help identify a defect: "
 
-	mattermostContextYes.Action = "yes"
-	mattermostContextNo.Action = "no"
+		mattermostActionYes.Name = "Yes, it is a defect!"
+		mattermostActionNo.Name = "No, is isn't a defect!"
 
-	mattermostContextNo.ImageId = image.ID
-	mattermostContextYes.ImageId = image.ID
+		mattermostIntegrationYes.Url = "http://mattermost-connector/mattermost_callback"
+		mattermostIntegrationNo.Url = "http://mattermost-connector/mattermost_callback"
 
-	mattermostIntegrationYes.DummyField = "dummy"
-	mattermostIntegrationNo.DummyField = "dummy"
+		mattermostContextYes.Action = "yes"
+		mattermostContextNo.Action = "no"
 
-	mattermostIntegrationYes.Context = mattermostContextYes
-	mattermostActionYes.Integration = mattermostIntegrationYes
+		mattermostContextNo.ImageId = image.ID
+		mattermostContextYes.ImageId = image.ID
 
-	mattermostIntegrationNo.Context = mattermostContextNo
-	mattermostActionNo.Integration = mattermostIntegrationNo
+		mattermostIntegrationYes.DummyField = "dummy"
+		mattermostIntegrationNo.DummyField = "dummy"
 
-	mattermostAttachment.Actions = append(mattermostAttachment.Actions, mattermostActionYes)
-	mattermostAttachment.Actions = append(mattermostAttachment.Actions, mattermostActionNo)
+		mattermostIntegrationYes.Context = mattermostContextYes
+		mattermostActionYes.Integration = mattermostIntegrationYes
+
+		mattermostIntegrationNo.Context = mattermostContextNo
+		mattermostActionNo.Integration = mattermostIntegrationNo
+
+		mattermostAttachment.Actions = append(mattermostAttachment.Actions, mattermostActionYes)
+		mattermostAttachment.Actions = append(mattermostAttachment.Actions, mattermostActionNo)
+	} else if (image.Channel == "alerts") {
+		mattermostAttachment.Text = "This image probably shows a defect! Please take appropriate action.\n\n ** The picture shows " + strconv.Itoa(probCache) + "% likely a defect. **"
+		mattermostAttachment.Title = "Defect Found: "
+	}
+
 	mattermostWebHookRequest.Attachments = append(mattermostWebHookRequest.Attachments, mattermostAttachment)
 
 	jsonStr, err := json.Marshal(mattermostWebHookRequest)
@@ -70,7 +76,14 @@ func SendImageViaWebhook(image Image) bool {
 		return false
 	}
 
-	req, err := http.NewRequest("POST", WEBHOOK_URL, bytes.NewBuffer(jsonStr))
+	var webhook_url = ""
+	if(image.Channel == "detection") {
+		webhook_url = WEBHOOK_URL_DETECTION
+	} else if (image.Channel == "alerts") {
+		webhook_url = WEBHOOK_URL_ALERTS
+	}
+
+	req, err := http.NewRequest("POST", webhook_url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -81,6 +94,7 @@ func SendImageViaWebhook(image Image) bool {
 		return false
 	}
 	defer resp.Body.Close()
+
 
 	return true
 }

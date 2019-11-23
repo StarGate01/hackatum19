@@ -112,7 +112,23 @@ export default class Router {
                 };
                 
                 await rp.post(options);
-                console.log('Rating sent');
+                console.log('Rating sent to AI');
+
+                if(isCrackedBool) {
+                    const options_msg = {
+                        method: 'POST',
+                        uri: `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/image`,
+                        body: {
+                            id: req.params.id,
+                            probability: 99,
+                            channel: "alerts",
+                        },
+                        json: true
+                    };
+                    
+                    await rp.post(options_msg);
+                    console.log('Message sent to frontend by human');
+                }
 
                 await trx.commit();
                 res.sendStatus(200);
@@ -139,18 +155,35 @@ export default class Router {
                 const probability = req.body.probability;
                 await Image.update({ probability }, { where: { id: req.params.id } });
 
-                const options = {
-                    method: 'POST',
-                    uri: `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/image`,
-                    body: {
-                        id: req.params.id,
-                        probability: probability,
-                    },
-                    json: true
-                };
-                
-                await rp.post(options);
-                console.log('Probability sent:'+ probability);
+                if(probability <= Number(process.env.AUTOPROB)) {
+                    const options = {
+                        method: 'POST',
+                        uri: `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/image`,
+                        body: {
+                            id: req.params.id,
+                            probability: probability,
+                            channel: "detection",
+                        },
+                        json: true
+                    };
+                    
+                    await rp.post(options);
+                    console.log('Probability sent:'+ probability);
+                } else {
+                    const options = {
+                        method: 'POST',
+                        uri: `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/image`,
+                        body: {
+                            id: req.params.id,
+                            probability: probability,
+                            channel: "alerts",
+                        },
+                        json: true
+                    };
+                    
+                    await rp.post(options);
+                    console.log('Message sent to frontend by ai:'+ probability);
+                }
 
                 await trx.commit();
                 res.sendStatus(200);

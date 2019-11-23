@@ -141,6 +141,7 @@ services:
       - ./persistent-data/images:/data/images:rw
     env_file:
       - db.env
+      - core.env
     environment:
       - IMGDIR=/data/images
       - MATTERMOST=mattermost-connector
