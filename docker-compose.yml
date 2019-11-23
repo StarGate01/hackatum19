@@ -136,3 +136,18 @@ services:
     networks:
       - app
 
+  core:
+    build: ./node-backend
+    restart: always
+    volumes:
+      - ./imgserver/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./persistent-data/images:/data/images:rw
+    environment:
+      - STATIC=/data/images
+    ports:
+      - "8888:3000"
+    expose:
+      - "3000"
+    networks:
+      - app
+      
