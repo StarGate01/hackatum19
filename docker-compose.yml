@@ -117,6 +117,8 @@ services:
     restart: always
     expose:
       - "5000"
+    volumes:
+      - ./persistent-data/images:/data/images:ro
     ports:
       - "8001:5000"
     networks:
