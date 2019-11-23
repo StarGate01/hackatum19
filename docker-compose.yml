@@ -100,3 +100,14 @@ services:
       - "80"
     networks:
       - app
+
+  imgserver:
+    image: "nginx:latest"
+    restart: always
+    volumes:
+      - ./imgserver/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./persistent-data/images:/etc/nginx/htdocs:ro
+    ports:
+      - "9203:80"
+    networks:
+      - app
