@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 	"os"
+	"strconv"
 )
 
 var WEBHOOK_URL_DETECTION = "http://mattermost-web/hooks/" + os.Getenv("WEBHOOK_DETECTION")
 var WEBHOOK_URL_ALERTS = "http://mattermost-web/hooks/" + os.Getenv("WEBHOOK_ALERTS")
+
 const CORE_URL = "http://core:3000/images"
 
 func SendImageViaWebhook(image Image) bool {
@@ -20,14 +21,14 @@ func SendImageViaWebhook(image Image) bool {
 	mattermostWebHookRequest.Username = "Detection-Bot"
 	mattermostWebHookRequest.Channel = image.Channel
 
-	probCache := image.Probability + 1
+	probCache := image.Probability
 	log.Println(probCache)
 
 	mattermostAttachment.Pretext = ""
 	mattermostAttachment.Color = "#ff0000"
-	mattermostAttachment.ImageUrl = "http://localhost:9203/"+image.ID+".jpg"
+	mattermostAttachment.ImageUrl = "http://localhost:9203/" + image.ID + ".jpg"
 
-	if(image.Channel == "detection") {
+	if image.Channel == "detection" {
 		var mattermostActionYes MattermostAction
 		var mattermostIntegrationYes MattermostIntegration
 		var mattermostContextYes MattermostContext
@@ -62,7 +63,7 @@ func SendImageViaWebhook(image Image) bool {
 
 		mattermostAttachment.Actions = append(mattermostAttachment.Actions, mattermostActionYes)
 		mattermostAttachment.Actions = append(mattermostAttachment.Actions, mattermostActionNo)
-	} else if (image.Channel == "alerts") {
+	} else if image.Channel == "alerts" {
 		mattermostAttachment.Text = "This image probably shows a defect! Please take appropriate action.\n\n ** The picture shows " + strconv.Itoa(probCache) + "% likely a defect. **"
 		mattermostAttachment.Title = "Defect Found: "
 	}
@@ -77,9 +78,9 @@ func SendImageViaWebhook(image Image) bool {
 	}
 
 	var webhook_url = ""
-	if(image.Channel == "detection") {
+	if image.Channel == "detection" {
 		webhook_url = WEBHOOK_URL_DETECTION
-	} else if (image.Channel == "alerts") {
+	} else if image.Channel == "alerts" {
 		webhook_url = WEBHOOK_URL_ALERTS
 	}
 
@@ -94,7 +95,6 @@ func SendImageViaWebhook(image Image) bool {
 		return false
 	}
 	defer resp.Body.Close()
-
 
 	return true
 }
