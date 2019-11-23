@@ -2,7 +2,7 @@
 import { Table, Model, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 
 // INTERNAL DEPENDENCIES
-import Image from './Image.model';
+import Image from './image.model';
 
 @Table({
     timestamps: true,
