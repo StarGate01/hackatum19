@@ -89,16 +89,16 @@ export default class Router {
                     throw { message: 'invalid id' };
                 }
 
-                let isCracked = true;
-                if (!req.body.isCracked) {
-                    isCracked = false;
+                let isCrackedBool = true;
+                if (!req.body.iscracked) {
+                    isCrackedBool = false;
                 }
 
                 const image = await Image.findOne({ where: { id } });
                 if (!image) {
                     throw { message: 'Image not found' };
                 }
-                await Rating.create({ imageId: image.id, isCracked }, { transaction: trx });
+                await Rating.create({ imageId: image.id, isCracked: isCrackedBool }, { transaction: trx });
                 console.log('Rating registered.');
 
                 const options = {
@@ -106,7 +106,7 @@ export default class Router {
                     uri: `http://${process.env.AI}:${process.env.AI_PORT}/model/train`,
                     body: {
                         id: image.id,
-                        isCracked,
+                        iscracked: req.body.iscracked,
                     },
                     json: true
                 };
@@ -128,9 +128,9 @@ export default class Router {
         });
 
         // POST /core/images/:id/probability
-        this.router.post('/:id/probabilty', async(req, res) => {
+        this.router.post('/:id/probability', async(req, res) => {
 
-            console.log('New probabilty recieved.');
+            console.log('New Probability recieved.');
 
             const trx = await registry.db.transaction();
 
@@ -139,9 +139,18 @@ export default class Router {
                 const probability = req.body.probability;
                 await Image.update({ probability }, { where: { id: req.params.id } });
 
-                const uri = `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/${req.params.id}/probability`;
-                await rp.post(uri);
-                console.log('Probability sent.');
+                const options = {
+                    method: 'POST',
+                    uri: `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/image`,
+                    body: {
+                        id: req.params.id,
+                        probability: probability,
+                    },
+                    json: true
+                };
+                
+                await rp.post(options);
+                console.log('Probability sent:'+ probability);
 
                 await trx.commit();
                 res.sendStatus(200);

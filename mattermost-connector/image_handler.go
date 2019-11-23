@@ -8,7 +8,6 @@ import (
 
 type Image struct {
 	ID          string `json:"id"`
-	//FileName    string `json:"filename"`
 	Probability int    `json:"probability"`
 }
 

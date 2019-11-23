@@ -45,6 +45,11 @@ type PredictRequest struct {
 	Id string `json:"id"`
 }
 
+type TrainRequest struct {
+	Id string `json:"id"`
+	IsCracked int `json:"iscracked"`
+}
+
 type PredictResponse struct {
 	Probability int `json:"probability"`
 }
@@ -77,6 +82,7 @@ func PredictResponseToCore(id string, ctx context.Context, projectid uuid.UUID, 
 	}
 
 	url := "http://core:3000/images/" + id + "/probability"
+	log.Println("Post to " + url)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(bytesRepresentation))
 	if err != nil {
 		log.Println(err)
@@ -87,4 +93,16 @@ func PredictResponseToCore(id string, ctx context.Context, projectid uuid.UUID, 
 
 func HandleTrainRequest(w http.ResponseWriter, r *http.Request, trainer training.BaseClient, ctx context.Context, lp training.Project, yesTag training.Tag, noTag training.Tag) {
 	log.Println("Handle train request ")
+	var trainRequest TrainRequest
+
+	err := json.NewDecoder(r.Body).Decode(&trainRequest)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if trainRequest.IsCracked != 0 {
+		log.Println(trainRequest.Id + ": yes")
+	} else {
+		log.Println(trainRequest.Id + ": no")
+	}
 }
