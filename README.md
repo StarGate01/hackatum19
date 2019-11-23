@@ -55,7 +55,6 @@ Pgadmin
     User: pguser
     Pass: pgpass
 
-
-# Data map
-
-/data/images
+Data server
+    Host: http://localhost:9203
+    Mount path: /data/images
