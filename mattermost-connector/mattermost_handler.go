@@ -1,8 +1,14 @@
 package main
 
-import "net/http"
+import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
+	"log"
+	"net/http"
+)
 
-const MATTERMOST_URL = "http://localhost:90"
+const WEBHOOK_URL = "http://mattermost-app:9200/hooks/5xbnbur3djyupcd69z5e1uk7pa"
 
 type MattermostWebhookRequest struct {
 	Text        string                 `json:"text"`
@@ -34,7 +40,30 @@ type MattermostContext struct {
 
 func SendImageViaWebhook(image Image) bool {
 	var mattermostWebHookRequest MattermostWebhookRequest
-	mattermostWebHookRequest.Text = ""
+	mattermostWebHookRequest.Text = "Test Request"
+
+	jsonStr, err := json.Marshal(mattermostWebHookRequest)
+	if err != nil {
+		log.Println("Failed to marshal Webhook request")
+		log.Println(err)
+		return false
+	}
+
+	req, err := http.NewRequest("POST", WEBHOOK_URL, bytes.NewBuffer(jsonStr))
+	req.Header.Set("X-Custom-Header", "myvalue")
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	log.Println("response Status:", resp.Status)
+	log.Println("response Headers:", resp.Header)
+	body, _ := ioutil.ReadAll(resp.Body)
+	log.Println("response Body:", string(body))
 
 	return true
 }

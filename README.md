@@ -28,6 +28,12 @@ The Mattermost connector uses Webhook
     Team-Name: rinderhack
     
     Create channel: detection
+    
+    Integrations -> Incoming Webhooks -> Add:
+        Title: detection
+        Description: detection
+        Channel: detection
+        Lock to this channel: activated
 
 ## Microservice Hosts 
 
