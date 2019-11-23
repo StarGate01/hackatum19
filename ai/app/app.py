@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
+from azure_requests import request_prediction
 import random
 
 app = Flask(__name__)
@@ -11,10 +12,11 @@ cors = CORS(app)
 def model_predict():
     r = request.get_json()
     filename = r["filename"]
-    filepath = "/data/images/" + filename
-
+    filepath = "/data/images/" + filename + ".jpg"
+    cracked, uncracked = request_prediction(filepath)
+    cracked = int(cracked * 100)
     return jsonify({
-        "probability": random.randint(0, 99)
+        "probability": cracked
     })
 
 
