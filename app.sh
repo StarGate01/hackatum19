@@ -9,4 +9,7 @@ elif [ "$1" == "down" ]; then
 elif [ "$1" == "build" ]; then
     echo "Building app"
     docker-compose build
+elif [ "$1" == "trigger" ]; then
+    echo "Triggering camera"
+    docker-compose exec camera /code/trigger.sh
 fi
