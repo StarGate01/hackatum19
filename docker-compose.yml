@@ -118,7 +118,7 @@ services:
     expose:
       - "5000"
     volumes:
-      - ./persistent-data/images:/data/image:ro
+      - ./persistent-data/images:/data/images:ro
     ports:
       - "8001:5000"
     networks:
