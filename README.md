@@ -1,62 +1,52 @@
-# Rinderhack: Fancy ML Project
+# Autocrack
 
-## Deployment steps: 
+Written at hackaTUM 2019 by
+- Marko Stapfner
+- Christoph Honal
+- Ilias Sulgin
+- Michael Gigler
 
-1. Fetch submodules: `git submodule update --init`
+## Dependencies
+- `docker`
+- `docker-compose`
+- `bash`
 
-2. Chmod: `chmod +x app.sh`
+## Deployment 
 
-2. Build: `./app.sh build`
+- (Chmod: `chmod +x app.sh`)
+- Build: `./app.sh build`
+- Deploy: `./app.sh up`
+- Shutdown `./app.sh down`
 
-3. Deploy: `./app.sh up`
+## Mattermost setup for testing
 
-4. Shutdown `./app.sh down`
+Credentials: 
+- Admin-Account: 
+- Email: `admin@example.com`
+- Password: `AdminAdmin$1`
+- Team-Name: `rinderhack`
 
+Create channels:
+- `detection`
+- `alerts`
 
-# mattermost-connector
+Integrations -> Incoming Webhooks -> Add:
+- Title: `detection`
+- Description: `detection`
+- Channel: `detection`
+- Lock to this channel: activated
+- Set `WEBHOOK_DETECTION` in `mattermost.env` to hash key
 
-The Mattermost connector uses Webhook
+Integrations -> Incoming Webhooks -> Add:
+- Title: `alerts`
+- Description: `alerts`
+- Channel: `alerts`
+- Lock to this channel: activated
+- Set `WEBHOOK_ALERTS` in `mattermost.env` to hash key
 
-## 1. Mattermost-Setup 
+System Console -> Developer:
+- Allow untrusted internal connections to: `mattermost-connector`
 
-## 2. Mattermost-Configuration
+## Configuration
 
-    Credentials: 
-
-    Admin-Account erstellen: 
-    Email: admin@example.com
-    Passwort: AdminAdmin$1
-    
-    Team-Name: rinderhack
-    
-    Create channel: detection
-    
-    Integrations -> Incoming Webhooks -> Add:
-        Title: detection
-        Description: detection
-        Channel: detection
-        Lock to this channel: activated
-
-## Microservice Hosts 
-
-App:
-    Host: http://localhost:9200
-
-Portainer
-    Host: http://localhost:9201
-
-Postgres
-    Host: db:5432
-    User: dbuser
-    Pass: dbpass
-    Database: app
-    Docker volume name: postgres-data
-
-Pgadmin
-    Host: http://localhost:9202
-    User: pguser
-    Pass: pgpass
-
-Data server
-    Host: http://localhost:9203
-    Mount path: /data/images
+Edit `core.env` to configure thresholds, `db.env` to configure the database access.
