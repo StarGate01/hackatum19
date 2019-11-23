@@ -54,3 +54,8 @@ Pgadmin
     Host: http://localhost:9202
     User: pguser
     Pass: pgpass
+
+
+# Data map
+
+/data/images
