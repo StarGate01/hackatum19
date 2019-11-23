@@ -2,15 +2,20 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v3.0/customvision/training"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
+	uuid "github.com/satori/go.uuid"
 	"log"
 	"net/http"
-	"time"
 )
 
 func main() {
+
+	trainer, ctx, lp, yesTag, noTag, project_id := StartConnectionToAzure()
+
 	r := chi.NewRouter()
 
 	// Enable Cors for the Frontend
@@ -24,9 +29,13 @@ func main() {
 	})
 	r.Use(cors.Handler)
 
-	r.Post("/model/predict", HandlePredictRequest)
+	r.Post("/model/predict", func(w http.ResponseWriter, r *http.Request) {
+		HandlePredictRequest(w, r, ctx, *project_id)
+	})
 
-	r.Post("/model/train", HandleTrainRequest)
+	r.Post("/model/train", func(w http.ResponseWriter, r *http.Request) {
+		HandleTrainRequest(w, r, trainer, ctx, lp, yesTag, noTag)
+	})
 
 	log.Println("Mattermost-Connector started")
 	http.ListenAndServe(":80", r)
@@ -37,15 +46,15 @@ type PredictRequest struct {
 }
 
 type TrainRequest struct {
-	Id string `json:"id"`
-	IsCracked int `json:"iscracked"`
+	Id        string `json:"id"`
+	IsCracked int    `json:"iscracked"`
 }
 
 type PredictResponse struct {
 	Probability int `json:"probability"`
 }
 
-func HandlePredictRequest(w http.ResponseWriter, r *http.Request) {
+func HandlePredictRequest(w http.ResponseWriter, r *http.Request, ctx context.Context, projectid uuid.UUID) {
 	log.Println("Handle predict request")
 	var predictRequest PredictRequest
 	err := json.NewDecoder(r.Body).Decode(&predictRequest)
@@ -54,15 +63,22 @@ func HandlePredictRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println(predictRequest.Id)
 	log.Println("Before response to core")
-	go PredictResponseToCore(predictRequest.Id)
+	go PredictResponseToCore(predictRequest.Id, ctx, projectid, predictRequest.Id)
 	w.Write([]byte("Okay"))
 	return
 }
 
-func PredictResponseToCore(id string) {
-	time.Sleep(2000)
+func PredictResponseToCore(id string, ctx context.Context, projectid uuid.UUID, dataName string) {
+
+	crackedProb := makePrediction(ctx, projectid, dataName)
+
+	log.Println("Before inside PredictResponseToCore")
 	var predictResponse PredictResponse
-	predictResponse.Probability = 32
+	predictResponse.Probability = int(crackedProb)
+	predictResponse.Probability = predictResponse.Probability - 1
+	if predictResponse.Probability < 0 {
+		predictResponse.Probability = 0
+	}
 
 	bytesRepresentation, err := json.Marshal(predictResponse)
 	if err != nil {
@@ -79,7 +95,7 @@ func PredictResponseToCore(id string) {
 	log.Println(resp.Status)
 }
 
-func HandleTrainRequest(w http.ResponseWriter, r *http.Request) {
+func HandleTrainRequest(w http.ResponseWriter, r *http.Request, trainer training.BaseClient, ctx context.Context, lp training.Project, yesTag training.Tag, noTag training.Tag) {
 	log.Println("Handle train request ")
 	var trainRequest TrainRequest
 

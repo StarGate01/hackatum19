@@ -3,6 +3,78 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "Cf8fsY04OJkHiqdIoi9+21EmZgo=",
+			"path": "github.com/Azure/azure-sdk-for-go",
+			"revision": "0820c0553d6c410603056869f7b0e52d61ce5bee",
+			"revisionTime": "2019-11-18T06:05:48Z"
+		},
+		{
+			"checksumSHA1": "F1H0M/vL4YMJ7jvvYGFO5ckGIno=",
+			"path": "github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v3.0/customvision/prediction",
+			"revision": "0820c0553d6c410603056869f7b0e52d61ce5bee",
+			"revisionTime": "2019-11-18T06:05:48Z"
+		},
+		{
+			"checksumSHA1": "9QofXL9x8nhyJ66r0j9ck2nBXxI=",
+			"path": "github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v3.0/customvision/training",
+			"revision": "0820c0553d6c410603056869f7b0e52d61ce5bee",
+			"revisionTime": "2019-11-18T06:05:48Z"
+		},
+		{
+			"checksumSHA1": "iTWK13IzGu+91mcKEbiBExc4bl8=",
+			"path": "github.com/Azure/azure-sdk-for-go/version",
+			"revision": "0820c0553d6c410603056869f7b0e52d61ce5bee",
+			"revisionTime": "2019-11-18T06:05:48Z"
+		},
+		{
+			"checksumSHA1": "aDAGv8zdDrun77KVMYPtGD9t5n4=",
+			"path": "github.com/Azure/go-autorest/autorest",
+			"revision": "3492b2aff5036c67228ab3c7dba3577c871db200",
+			"revisionTime": "2019-10-28T18:08:45Z"
+		},
+		{
+			"checksumSHA1": "+sZIvmeyhDh28yRhsXVt9+I7Dhk=",
+			"path": "github.com/Azure/go-autorest/autorest/adal",
+			"revision": "3492b2aff5036c67228ab3c7dba3577c871db200",
+			"revisionTime": "2019-10-28T18:08:45Z"
+		},
+		{
+			"checksumSHA1": "sV4wrmfmuKvYpPRPkoPObeBC77g=",
+			"path": "github.com/Azure/go-autorest/autorest/azure",
+			"revision": "3492b2aff5036c67228ab3c7dba3577c871db200",
+			"revisionTime": "2019-10-28T18:08:45Z"
+		},
+		{
+			"checksumSHA1": "I9jacF5Ym6s2GU8dpi9yUT6I1hM=",
+			"path": "github.com/Azure/go-autorest/autorest/date",
+			"revision": "3492b2aff5036c67228ab3c7dba3577c871db200",
+			"revisionTime": "2019-10-28T18:08:45Z"
+		},
+		{
+			"checksumSHA1": "uh3gcvSj8u8aPYC+x4YU19Gu8Tw=",
+			"path": "github.com/Azure/go-autorest/autorest/validation",
+			"revision": "3492b2aff5036c67228ab3c7dba3577c871db200",
+			"revisionTime": "2019-10-28T18:08:45Z"
+		},
+		{
+			"checksumSHA1": "nXtlS0uRMjqa8+dmeEqo3j3AXEo=",
+			"path": "github.com/Azure/go-autorest/logger",
+			"revision": "3492b2aff5036c67228ab3c7dba3577c871db200",
+			"revisionTime": "2019-10-28T18:08:45Z"
+		},
+		{
+			"checksumSHA1": "StsBozgf+C8kMv6htCiFBJbmmUw=",
+			"path": "github.com/Azure/go-autorest/tracing",
+			"revision": "3492b2aff5036c67228ab3c7dba3577c871db200",
+			"revisionTime": "2019-10-28T18:08:45Z"
+		},
+		{
+			"checksumSHA1": "P6u6fDWwSfRL2Bc6uhZ9kcoPsek=",
+			"path": "github.com/dgrijalva/jwt-go",
+			"revision": "5e25c22bd5d6de03265bbe5462dcd162f85046f6",
+			"revisionTime": "2019-06-20T18:01:02Z"
+		},
+		{
 			"checksumSHA1": "/8YPhEhAaq01DmoBF0XDLET/FCY=",
 			"path": "github.com/go-chi/chi",
 			"revision": "221acf29d02b708ec13791ff562888a730bfe6a7",
@@ -13,6 +85,12 @@
 			"path": "github.com/go-chi/cors",
 			"revision": "07727c846d14299758e54a275dd8c81353c01960",
 			"revisionTime": "2018-08-16T15:23:45Z"
+		},
+		{
+			"checksumSHA1": "Tutue3nEgM/87jitUcYv6ODwyNE=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "b2ce2384e17bbe0c6d34077efa39dbab3e09123b",
+			"revisionTime": "2018-10-28T12:50:25Z"
 		}
 	],
 	"rootPath": "markostapfner.com/hackatum19/ai-go"

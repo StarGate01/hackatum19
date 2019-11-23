@@ -109,12 +109,13 @@ services:
       - "9203:80"
     networks:
       - app
-      
+
   ai:
     image: "golang:alpine"
     restart: always
     volumes:
       - ./ai-go:/go/src/ai-go
+      - ./persistent-data/images:/data/images:ro
     working_dir: /go/src/ai-go
     command: sh -c "go run *.go"
     expose:
@@ -155,4 +156,3 @@ services:
       - "3000"
     networks:
       - app
-      
