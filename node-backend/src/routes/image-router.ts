@@ -156,19 +156,23 @@ export default class Router {
                 await Image.update({ probability }, { where: { id: req.params.id } });
 
                 if(probability <= Number(process.env.AUTOPROB)) {
-                    const options = {
-                        method: 'POST',
-                        uri: `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/image`,
-                        body: {
-                            id: req.params.id,
-                            probability: probability,
-                            channel: "detection",
-                        },
-                        json: true
-                    };
-                    
-                    await rp.post(options);
-                    console.log('Probability sent:'+ probability);
+                    if(probability <= Number(process.env.AUTOPROB_LOW)) {
+                        const options = {
+                            method: 'POST',
+                            uri: `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/image`,
+                            body: {
+                                id: req.params.id,
+                                probability: probability,
+                                channel: "detection",
+                            },
+                            json: true
+                        };
+                        
+                        await rp.post(options);
+                        console.log('Probability sent:'+ probability);
+                    } else {
+                        console.log('Probability below cutoff:'+ probability);
+                    }
                 } else {
                     const options = {
                         method: 'POST',
