@@ -111,3 +111,14 @@ services:
       - "9203:80"
     networks:
       - app
+      
+  ai:
+    build: ./ai/app
+    restart: always
+    expose:
+      - "5000"
+    ports:
+      - "8001:5000"
+    networks:
+      - app
+
