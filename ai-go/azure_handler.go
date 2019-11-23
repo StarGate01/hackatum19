@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v3.0/customvision/prediction"
 	"github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v3.0/customvision/training"
 	"net/http"
 	"time"
@@ -15,36 +16,7 @@ import (
 	"path"
 )
 
-type UntaggedImage struct {
-	Id               string `json:"id"`
-	Created          string `json:"created"`
-	Width            int    `json:"width"`
-	Height           int    `json:"height"`
-	ResizedImageUri  string `json:"resizedImageUri"`
-	ThumbnailUri     string `json:"thumbnailUri"`
-	OriginalImageUri string `json:"originalImageUri"`
-}
-
-type TagImageRequest struct {
-	Tags []Tag `json:"tags"`
-}
-
-type Tag struct {
-	ImageId string `json:"imageId"`
-	TagId   string `json:"tagId"`
-}
-
-var (
-	training_key           string = "284caa38d879463b90d0871031c19958"
-	prediction_key         string = "284caa38d879463b90d0871031c19958"
-	prediction_resource_id        = "/subscriptions/c05185ee-31c6-43bb-a01c-2a0d0f80fb39/resourceGroups/test/providers/Microsoft.CognitiveServices/accounts/Test"
-	endpoint               string = "https://southcentralus.api.cognitive.microsoft.com/"
-	project_name           string = "Go Sample Project"
-	iteration_publish_name        = "classifyModel"
-	sampleDataDirectory           = "./lol_folder"
-)
-
-func StartConnectionToAzure() {
+func StartConnectionToAzure() (training.BaseClient, context.Context, training.Project, training.Tag, training.Tag, *uuid.UUID) {
 	ctx := context.Background()
 	trainer := training.New(training_key, endpoint)
 	result, err := trainer.GetProjects(ctx)
@@ -54,7 +26,6 @@ func StartConnectionToAzure() {
 	responder := result.Value
 	lp := *responder
 	project_id := lp[0].ID
-	log.Println(project_id)
 
 	// Get Latest iteration
 	latest_iteration, err := trainer.GetIterations(ctx, *project_id)
@@ -82,41 +53,21 @@ func StartConnectionToAzure() {
 		}
 	}
 
-	UploadImagesToAzure(trainer, ctx, lp[0], yesTag, noTag)
+	return trainer, ctx, lp[0], yesTag, noTag, project_id
 
-	TagImagesInAzure("32055944-3988-407f-b380-c5adf8ad9fd8")
+	//UploadImagesToAzure(trainer, ctx, lp[0], yesTag, noTag)
 
-	log.Println("Train model ")
-	TrainModel(trainer, ctx, *project_id)
+	//TagImagesInAzure("32055944-3988-407f-b380-c5adf8ad9fd8")
 
-	//yesTag, _ := trainer.GetTag(ctx, project_id, "yes", "yes", string(training.Regular))
+	//log.Println("Train model ")
+	//TrainModel(trainer, ctx, *project_id)
 
-	//cherryTag, _ := trainer.CreateTag(ctx, *project.ID, "Japanese Cherry", "Japanese cherry tree tag", string(training.Regular))
+	//log.Println("Test model")
+	//makePrediction(ctx, *project_id)
 
-	//responder, err := trainer.GetProjectResponder(result)
-}
-
-func PredictImageInAzure() {
-	/*
-		log.Println("Predicting...")
-		predictor := prediction.New(prediction_key, endpoint)
-
-		testImageData, _ := ioutil.ReadFile(path.Join(sampleDataDirectory, "Test", "test_image.jpg"))
-		results, _ := predictor.ClassifyImage(ctx, *project.ID, iteration_publish_name, ioutil.NopCloser(bytes.NewReader(testImageData)), "")
-
-		for _, prediction := range *results.Predictions {
-			fmt.Printf("\t%s: %.2f%%", *prediction.TagName, *prediction.Probability * 100)
-			fmt.Println("")
-		}
-
-	*/
 }
 
 func UploadImagesToAzure(trainer training.BaseClient, ctx context.Context, project training.Project, yesTag training.Tag, noTag training.Tag) {
-
-	//log.Println(*yesTag.ID)
-
-	//maybeTag, _ := trainer.CreateTag(ctx, *project.ID, "maybe", "maybe", string(training.Regular))
 
 	japaneseCherryImages, err := ioutil.ReadDir(path.Join(sampleDataDirectory, ""))
 	if err != nil {
@@ -214,6 +165,26 @@ func TrainModel(trainer training.BaseClient, ctx context.Context, projectid uuid
 	trainer.PublishIteration(ctx, projectid, *iteration.ID, iteration_publish_name, prediction_resource_id)
 }
 
-func makePrediction() {
+func makePrediction(ctx context.Context, projectid uuid.UUID, dataName string) float64 {
+	log.Println("Predicting...")
+	predictor := prediction.New(prediction_key, endpoint)
 
+	dataName = dataName + ".jpg"
+
+	testImageData, _ := ioutil.ReadFile(path.Join("/data/images", dataName))
+	results, _ := predictor.ClassifyImage(ctx, projectid, iteration_publish_name, ioutil.NopCloser(bytes.NewReader(testImageData)), "")
+
+	crackedProb := 0.0
+
+	for _, prediction1 := range *results.Predictions {
+		log.Printf("\t%s: %.2f%%", *prediction1.TagName, *prediction1.Probability*100)
+		log.Println("")
+		if *prediction1.TagName == "cracked" {
+			crackedProb = *prediction1.Probability * 100
+		}
+	}
+	// Return the cracked probability
+	log.Println("Cracked Probability")
+	log.Println(crackedProb)
+	return crackedProb
 }
