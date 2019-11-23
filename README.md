@@ -56,3 +56,7 @@ Pgadmin
     Host: http://localhost:9202
     User: pguser
     Pass: pgpass
+
+Data server
+    Host: http://localhost:9203
+    Mount path: /data/images

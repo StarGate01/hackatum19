@@ -2,8 +2,6 @@ version: '3'
 
 networks:
   app:
-    external:
-      name: app
 
 volumes:
   postgres-data:
@@ -24,7 +22,7 @@ services:
 
   db:
     image: "postgres:latest"
-    restart: unless-stopped
+    restart: always
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./postgres/create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh:ro
@@ -38,8 +36,10 @@ services:
       - app
 
   pgadmin:
-    image: dpage/pgadmin4
-    restart: unless-stopped
+    image: "dpage/pgadmin4:latest"
+    restart: always
+    depends_on:
+      - db
     environment:
       PGADMIN_DEFAULT_EMAIL: pguser
       PGADMIN_DEFAULT_PASSWORD: pgpass
@@ -50,8 +50,48 @@ services:
     networks:
       - app
 
+  mattermost-app:
+    build:
+      context: mattermost-app
+      args:
+        - edition=team
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - ./persistent-data/mattermost/app/mattermost/config:/mattermost/config:rw
+      - ./persistent-data/mattermost/app/mattermost/data:/mattermost/data:rw
+      - ./persistent-data/mattermost/app/mattermost/logs:/mattermost/logs:rw
+      - ./persistent-data/mattermost/app/mattermost/plugins:/mattermost/plugins:rw
+      - ./persistent-data/mattermost/app/mattermost/client-plugins:/mattermost/client/plugins:rw
+    environment:
+      - MM_USERNAME=dbuser
+      - MM_PASSWORD=dbpass
+      - MM_DBNAME=mattermost
+      - MM_SQLSETTINGS_DATASOURCE=postgres://dbuser:dbpass@db:5432/mattermost?sslmode=disable&connect_timeout=10
+    expose:
+      - "8000"
+    networks:
+      - app
+
+  mattermost-web:
+    build: mattermost-web
+    restart: always
+    depends_on:
+      - mattermost-app
+    environment:
+      - MATTERMOST_ENABLE_SSL=false
+      - APP_HOST=mattermost-app
+    ports:
+      - "9200:80"
+    networks:
+      - app
+
   mattermost-connector:
-    image: golang:alpine
+    image: "golang:alpine"
+    restart: always
+    depends_on:
+      - mattermost-web
     volumes:
       - ./mattermost-connector:/go/src/mattermost-connector
     working_dir: /go/src/mattermost-connector
@@ -62,3 +102,28 @@ services:
       - "80"
     networks:
       - app
+
+  imgserver:
+    image: "nginx:latest"
+    restart: always
+    volumes:
+      - ./imgserver/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./persistent-data/images:/etc/nginx/htdocs:ro
+    ports:
+      - "9203:80"
+    networks:
+      - app
+      
+  ai:
+    build: ./ai/app
+    restart: always
+    expose:
+      - "5000"
+    volumes:
+      - ./ai/app:/code:rw
+      - ./persistent-data/images:/data/images:ro
+    ports:
+      - "8001:5000"
+    networks:
+      - app
+
