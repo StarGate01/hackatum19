@@ -49,3 +49,14 @@ services:
       - "9202:80"
     networks:
       - app
+
+  mattermost-connector:
+    image: golang:alpine
+    volumes:
+      - ./mattermost-connector:/go/src/mattermost-connector
+    working_dir: /go/src/mattermost-connector
+    command: sh -c "go run *.go"
+    expose:
+      - "80"
+    networks:
+      - app
