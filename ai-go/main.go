@@ -109,4 +109,16 @@ func HandleTrainRequest(w http.ResponseWriter, r *http.Request, trainer training
 	} else {
 		log.Println(trainRequest.Id + ": no")
 	}
+
+	go TrainToCore(trainRequest.Id, trainRequest.IsCracked, trainer, ctx, lp, yesTag, noTag)
+}
+
+func TrainToCore(trainID string, cracked int, trainer training.BaseClient, ctx context.Context, project training.Project, yesTag training.Tag, noTag training.Tag) {
+	log.Println("Train to Core")
+	UploadImagesToAzure(trainID, trainer, ctx, project, yesTag, noTag)
+	if cracked == 1 {
+		TagImagesInAzure(yesTag.ID.String())
+	} else {
+		TagImagesInAzure(noTag.ID.String())
+	}
 }

@@ -67,30 +67,21 @@ func StartConnectionToAzure() (training.BaseClient, context.Context, training.Pr
 
 }
 
-func UploadImagesToAzure(trainer training.BaseClient, ctx context.Context, project training.Project, yesTag training.Tag, noTag training.Tag) {
+func UploadImagesToAzure(filename string, trainer training.BaseClient, ctx context.Context, project training.Project, yesTag training.Tag, noTag training.Tag) {
+	filename = filename + ".jpg"
 
-	japaneseCherryImages, err := ioutil.ReadDir(path.Join(sampleDataDirectory, ""))
+	imageFile, _ := ioutil.ReadFile(path.Join(sampleDataDirectory, filename))
+	imageData := ioutil.NopCloser(bytes.NewReader(imageFile))
+	log.Println(*yesTag.Name)
+
+	// []uuid.UUID{ *yesTag.ID }
+	res, err := trainer.CreateImagesFromData(ctx, *project.ID, imageData, []uuid.UUID{})
 	if err != nil {
-		log.Println("Error finding Sample images")
 		log.Println(err)
 	}
-	log.Println("LOLOL")
-	for _, file := range japaneseCherryImages {
-		log.Println(file.Name())
-		imageFile, _ := ioutil.ReadFile(path.Join(sampleDataDirectory, file.Name()))
-		imageData := ioutil.NopCloser(bytes.NewReader(imageFile))
-		log.Println(*yesTag.Name)
+	log.Println(res.Request)
+	log.Println(*res.IsBatchSuccessful)
 
-		// []uuid.UUID{ *yesTag.ID }
-		test := *yesTag.ID
-		log.Println(test)
-		res, err := trainer.CreateImagesFromData(ctx, *project.ID, imageData, []uuid.UUID{*yesTag.ID})
-		if err != nil {
-			log.Println(err)
-		}
-		log.Println(res.Request)
-		log.Println(*res.IsBatchSuccessful)
-	}
 }
 
 func TagImagesInAzure(tagId string) {

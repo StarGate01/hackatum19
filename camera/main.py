@@ -35,4 +35,3 @@ def sigusr(sig, frame):
 if __name__ == '__main__':
     signal(SIGUSR1, sigusr)
     main()
-    

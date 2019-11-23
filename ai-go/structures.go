@@ -26,5 +26,5 @@ var (
 	endpoint               string = "https://southcentralus.api.cognitive.microsoft.com/"
 	project_name           string = "Go Sample Project"
 	iteration_publish_name        = "classifyModel"
-	sampleDataDirectory           = "./lol_folder"
+	sampleDataDirectory           = "/data/images"
 )
