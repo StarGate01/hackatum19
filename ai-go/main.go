@@ -46,8 +46,8 @@ type PredictRequest struct {
 }
 
 type TrainRequest struct {
-	Id string `json:"id"`
-	IsCracked int `json:"iscracked"`
+	Id        string `json:"id"`
+	IsCracked int    `json:"iscracked"`
 }
 
 type PredictResponse struct {
@@ -75,6 +75,10 @@ func PredictResponseToCore(id string, ctx context.Context, projectid uuid.UUID, 
 	log.Println("Before inside PredictResponseToCore")
 	var predictResponse PredictResponse
 	predictResponse.Probability = int(crackedProb)
+	predictResponse.Probability = predictResponse.Probability - 1
+	if predictResponse.Probability < 0 {
+		predictResponse.Probability = 0
+	}
 
 	bytesRepresentation, err := json.Marshal(predictResponse)
 	if err != nil {
