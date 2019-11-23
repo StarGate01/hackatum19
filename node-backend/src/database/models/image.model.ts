@@ -19,6 +19,12 @@ export default class Image extends Model<Image> {
     })
     id!: string;
 
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    probability!: number;
+
     // ########## ########## ########## ########## ##########
     //                      Associations
     // ########## ########## ########## ########## ##########

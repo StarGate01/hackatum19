@@ -38,7 +38,7 @@ export default class Router {
                     throw { message: 'No file uploaded' };
                 }
 
-                const image = await Image.create({}, { transaction: trx });
+                const image = await Image.create({probability: -1}, { transaction: trx });
                 const filename = image.id + '.jpg';
                 const uploadedFile: any = req.files.image;
                 const filepath = path.join("/data/images", filename);
@@ -99,7 +99,7 @@ export default class Router {
                     throw { message: 'Image not found' };
                 }
                 await Rating.create({ imageId: image.id, isCracked }, { transaction: trx });
-                console.log('Rating successful registered.');
+                console.log('Rating registered.');
 
                 const options = {
                     method: 'POST',
@@ -112,7 +112,7 @@ export default class Router {
                 };
                 
                 await rp.post(options);
-                console.log('successful sent');
+                console.log('Rating sent');
 
                 await trx.commit();
                 res.sendStatus(200);
@@ -132,11 +132,27 @@ export default class Router {
 
             console.log('New probabilty recieved.');
 
-            const uri = `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/${req.params.id}/probability`;
-            await rp.post(uri);
+            const trx = await registry.db.transaction();
 
-            console.log('Probability sent.');
-            res.sendStatus(200);
+            try {
+
+                const probability = req.body.probability;
+                await Image.update({ probability }, { where: { id: req.params.id } });
+
+                const uri = `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/${req.params.id}/probability`;
+                await rp.post(uri);
+                console.log('Probability sent.');
+
+                await trx.commit();
+                res.sendStatus(200);
+
+            } catch (err) {
+
+                await trx.rollback();
+                console.log(err);
+                res.status(400).send(err);
+
+            }
 
         })
     }
