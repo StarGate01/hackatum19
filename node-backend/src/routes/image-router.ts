@@ -156,7 +156,7 @@ export default class Router {
                 await Image.update({ probability }, { where: { id: req.params.id } });
 
                 if(probability <= Number(process.env.AUTOPROB)) {
-                    if(probability <= Number(process.env.AUTOPROB_LOW)) {
+                    if(probability >= Number(process.env.AUTOPROB_LOW)) {
                         const options = {
                             method: 'POST',
                             uri: `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/image`,
