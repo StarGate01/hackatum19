@@ -24,7 +24,7 @@ services:
 
   db:
     image: "postgres:latest"
-    restart: unless-stopped
+    restart: always
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./postgres/create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh:ro
@@ -38,8 +38,8 @@ services:
       - app
 
   pgadmin:
-    image: dpage/pgadmin4
-    restart: unless-stopped
+    image: "dpage/pgadmin4:latest"
+    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: pguser
       PGADMIN_DEFAULT_PASSWORD: pgpass
@@ -51,7 +51,8 @@ services:
       - app
 
   mattermost-connector:
-    image: golang:alpine
+    image: "golang:alpine"
+    restart: always
     volumes:
       - ./mattermost-connector:/go/src/mattermost-connector
     working_dir: /go/src/mattermost-connector
@@ -60,3 +61,14 @@ services:
       - "80"
     networks:
       - app
+
+  ai:
+    build: ./ai/app
+    restart: always
+    expose:
+      - "5000"
+    ports:
+      - "8001:5000"
+    networks:
+      - app
+

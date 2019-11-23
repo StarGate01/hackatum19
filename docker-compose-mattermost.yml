@@ -11,7 +11,7 @@ services:
       context: mattermost/app
       args:
         - edition=team
-    restart: unless-stopped
+    restart: always
     volumes:
       - ./persistent-data/mattermost/app/mattermost/config:/mattermost/config:rw
       - ./persistent-data/mattermost/app/mattermost/data:/mattermost/data:rw
@@ -32,7 +32,7 @@ services:
 
   mattermost-web:
     build: mattermost/web
-    restart: unless-stopped
+    restart: always
     depends_on:
       - mattermost-app
     environment:
