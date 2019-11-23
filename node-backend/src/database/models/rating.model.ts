@@ -2,7 +2,7 @@
 import { Table, Model, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 
 // INTERNAL DEPENDENCIES
-import Image from './image.model';
+import Image from './Image.model';
 
 @Table({
     timestamps: true,
@@ -14,6 +14,7 @@ export default class Rating extends Model<Rating> {
         primaryKey: true,
         type: DataType.INTEGER,
         allowNull: false,
+        autoIncrement: true,
     })
     id!: number;
 
@@ -24,9 +25,10 @@ export default class Rating extends Model<Rating> {
     imageId!: string;
 
     @Column({
-        type: DataType.FLOAT,
+        type: DataType.BOOLEAN,
+        allowNull: false,
     })
-    value!: number;
+    isCracked!: boolean;
 
     // ########## ########## ########## ########## ##########
     //                      Associations

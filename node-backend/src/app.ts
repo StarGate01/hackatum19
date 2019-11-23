@@ -1,9 +1,11 @@
 
 // EXTERNAL DEPENDENCIES
+import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan';
 import winston from 'winston';
+import fileUpload from 'express-fileupload';
 
 // INTERNAL DEPENDENCIES
 import LoggingSystem from './utils/logging-system';
@@ -30,6 +32,19 @@ export default class Server {
          * Creates an Express application.
          */
         this.app = express();
+
+        /**
+         * Parse incoming request bodies in a middleware before the
+         * handlers, available under the req.body property.
+         */
+        this.app.use(bodyParser.json());
+
+        /**
+         * When you upload a file, the file will be accessible from req.files.
+         */
+        this.app.use(fileUpload({
+            limits: { fileSize: 50 * 1024 * 1024 },
+        }));
 
         /**
          * Binds logging system.

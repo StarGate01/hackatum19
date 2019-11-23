@@ -2,7 +2,7 @@
 import { Table, Model, Column, DataType, HasMany } from 'sequelize-typescript';
 
 // INTERNAL DEPENDENCIES
-import Rating from './rating.model';
+import Rating from './Rating.model';
 
 @Table({
     timestamps: true,
@@ -18,14 +18,6 @@ export default class Image extends Model<Image> {
         comment: "unique id for an image in uuid/v4",
     })
     id!: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-        unique: true,
-        comment: 'full path of image',
-    })
-    filepath!: string;
 
     // ########## ########## ########## ########## ##########
     //                      Associations

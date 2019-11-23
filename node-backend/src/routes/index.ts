@@ -4,7 +4,7 @@ import express from 'express';
 
 // INTERNAL DEPENDENCIES
 import Registry from '../app';
-import TestRouter from './test-router';
+import ImageRouter from './image-router';
 
 export default class Router {
 
@@ -25,7 +25,12 @@ export default class Router {
         /**
          * Bind router modules.
          */
-        this.mainRouter.use('/test', new TestRouter(registry).init());
+        this.mainRouter.use('/images', new ImageRouter(registry).init());
+
+        /**
+         * Every other undefined route returns 'Page not found'.
+         */
+        registry.app.use((_, res, next) => res.status(404).send({message: 'Page not found'}));
 
     }
 
