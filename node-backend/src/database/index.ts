@@ -34,10 +34,10 @@ export default class Database {
          * Get database configuration, depending on environment.
          */
         this.dbConfig = {
-            username : 'postgres',
-            password: 'test123#',
-            database: 'testDB',
-            host: 'localhost',
+            username : process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DB,
+            host: process.env.DB,
             port: '5432',
             dialect: 'postgres',
             schema: 'main',

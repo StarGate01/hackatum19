@@ -2,7 +2,7 @@
 import { Table, Model, Column, DataType, HasMany } from 'sequelize-typescript';
 
 // INTERNAL DEPENDENCIES
-import Rating from './Rating.model';
+import Rating from './rating.model';
 
 @Table({
     timestamps: true,

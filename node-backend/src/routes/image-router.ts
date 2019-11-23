@@ -7,8 +7,8 @@ import rp from 'request-promise';
 
 // INTERNAL DEPENDENCIES
 import Registry from '../app';
-import Image from '../database/models/Image.model';
-import Rating from '../database/models/Rating.model';
+import Image from '../database/models/image.model';
+import Rating from '../database/models/rating.model';
 
 export default class Router {
 
@@ -41,7 +41,7 @@ export default class Router {
                 const image = await Image.create({}, { transaction: trx });
                 const filename = image.id + '.jpg';
                 const uploadedFile: any = req.files.image;
-                const filepath = path.join(process.env.static!, filename);
+                const filepath = path.join("/data/images", filename);
 
                 uploadedFile.mv(filepath, function (err: any) {
                     if (err)
@@ -52,7 +52,7 @@ export default class Router {
 
                 const options = {
                     method: 'POST',
-                    uri: `http://${process.env.AI}/model/train`,
+                    uri: `http://${process.env.AI}:${process.env.AI_PORT}/model/train`,
                     body: {
                         id: image.id,
                     },
@@ -103,7 +103,7 @@ export default class Router {
 
                 const options = {
                     method: 'POST',
-                    uri: `http://${process.env.AI}/model/predict`,
+                    uri: `http://${process.env.AI}:${process.env.AI_PORT}/model/predict`,
                     body: {
                         id: image.id,
                     },
@@ -131,7 +131,7 @@ export default class Router {
 
             console.log('New probabilty recieved.');
 
-            const uri = `http://${process.env.MATTERMOST}/${req.params.id}/probability`;
+            const uri = `http://${process.env.MATTERMOST}:${process.env.MATTERMOST_PORT}/${req.params.id}/probability`;
             await rp.post(uri);
 
             console.log('Probability sent.');

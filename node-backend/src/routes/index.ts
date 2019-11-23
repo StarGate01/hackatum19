@@ -20,6 +20,7 @@ export default class Router {
         /**
          * Bind router modules.
          */
+        registry.app.use(this.mainRouter);
         this.mainRouter.use('/images', new ImageRouter(registry).init());
 
         /**
