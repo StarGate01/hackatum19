@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from azure_requests import request_prediction
+from azure_requests import upload_pic
 from dotenv import load_dotenv
 import os
 
@@ -12,6 +13,9 @@ cors = CORS(app)
 
 endpoint = os.getenv('ENDPOINT')
 prediction_key = os.getenv('PREDICTION_KEY')
+endpoint_upload = os.getenv('ENDPOINT_UPLOAD')
+training_key = os.getenv("TRAINING_KEY")
+predction_resource_id = os.getenv("PREDICTION_RESOURCE_ID")
 
 @app.route('/model/predict', methods=['POST'])
 def model_predict():
@@ -31,6 +35,8 @@ def model_train():
     filename = r["id"]
     is_cracked = r["iscracked"]
     filepath = "/data/images/" + filename + ".jpg"
+
+    upload_pic(endpoint_upload, training_key)
 
     return "Model trained"
 

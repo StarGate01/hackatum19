@@ -1,6 +1,9 @@
 import json
 import os
 
+from azure.cognitiveservices.vision.customvision.training import CustomVisionTrainingClient
+from azure.cognitiveservices.vision.customvision.training.models import ImageFileCreateEntry
+
 from requests import Request, Session
 
 
@@ -21,3 +24,18 @@ def request_prediction(file_path, endpoint, prediction_key):
         elif item['tagName'] == "uncracked":
             uncrackedProb = item['probability']
     return crackedProb, uncrackedProb
+
+
+def upload_pic(endpoint, training_key):
+
+    # Replace with a valid key
+    prediction_key = "<your prediction key>"
+    prediction_resource_id = "<your prediction resource id>"
+
+    publish_iteration_name = "classifyModel"
+
+    trainer = CustomVisionTrainingClient(training_key, endpoint=endpoint)
+
+    # Create a new project
+    print("Creating project...")
+    project = trainer.create_project("My New Project")
