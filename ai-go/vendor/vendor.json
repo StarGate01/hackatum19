@@ -1,0 +1,19 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "/8YPhEhAaq01DmoBF0XDLET/FCY=",
+			"path": "github.com/go-chi/chi",
+			"revision": "221acf29d02b708ec13791ff562888a730bfe6a7",
+			"revisionTime": "2019-10-31T10:07:31Z"
+		},
+		{
+			"checksumSHA1": "n9ry/OHiteTTjZOeJHTrEwRSnms=",
+			"path": "github.com/go-chi/cors",
+			"revision": "07727c846d14299758e54a275dd8c81353c01960",
+			"revisionTime": "2018-08-16T15:23:45Z"
+		}
+	],
+	"rootPath": "markostapfner.com/hackatum19/ai-go"
+}
