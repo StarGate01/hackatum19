@@ -11,6 +11,9 @@ import (
 )
 
 func main() {
+
+	StartConnectionToAzure()
+
 	r := chi.NewRouter()
 
 	// Enable Cors for the Frontend
