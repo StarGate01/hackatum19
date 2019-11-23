@@ -23,11 +23,20 @@ func HandleIncomingImage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Failed to decode json")
 		log.Println(err)
+		http.Error(w, "Failed to decode json", http.StatusInternalServerError)
+		return
 	}
 
+	success := SendImageViaWebhook(image)
 	var statusRequest StatusRequest
-	statusRequest.StatusCode = 200
-	statusRequest.Message = "Successfully received image"
+	if success {
+		statusRequest.StatusCode = 200
+		statusRequest.Message = "Successfully sent to Mattermost"
+	} else {
+		statusRequest.StatusCode = 500
+		statusRequest.Message = "Failed to send image to Mattermost"
+		http.Error(w, "Failed to send image to Mattermost", http.StatusInternalServerError)
+	}
 
 	err2 := json.NewEncoder(w).Encode(statusRequest)
 	if err2 != nil {

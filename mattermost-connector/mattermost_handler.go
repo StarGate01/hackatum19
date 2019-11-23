@@ -32,10 +32,11 @@ type MattermostContext struct {
 	Action string `json:"action"`
 }
 
-func SendImageViaWebhook(image Image) {
+func SendImageViaWebhook(image Image) bool {
 	var mattermostWebHookRequest MattermostWebhookRequest
 	mattermostWebHookRequest.Text = ""
 
+	return true
 }
 
 func HandleCallbackFromMattermost(w http.ResponseWriter, r *http.Request) {
