@@ -24,7 +24,8 @@ def model_train():
     filename = r["filename"]
     is_cracked = r["iscracked"]
     filepath = "/data/images/" + filename
-    return "Model trained"  # send_file(filepath, mimetype="image/jpeg")
+
+    return "Model trained"
 
 
 if __name__ == '__main__':
