@@ -95,7 +95,7 @@ services:
     volumes:
       - ./mattermost-connector:/go/src/mattermost-connector
     environment:
-      - WEBHOOK=8pf448j5stb3fbonqije8ym54c
+      - WEBHOOK=ot6zt6dgcprg3rwnbh76q1pcoo
       - PREDICTION_KEY=284caa38d879463b90d0871031c19958
       - ENDPOINT=https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/0c667159-2b5c-4449-8aa5-a670fb31edd8/classify/iterations/Iteration2/image
     working_dir: /go/src/mattermost-connector
@@ -119,15 +119,16 @@ services:
       - app
       
   ai:
-    build: ./ai/app
+    image: "golang:alpine"
     restart: always
-    expose:
-      - "5000"
     volumes:
-      - ./ai/app:/code:rw
-      - ./persistent-data/images:/data/images:ro
+      - ./ai-go:/go/src/ai-go
+    working_dir: /go/src/ai-go
+    command: sh -c "go run *.go"
     ports:
-      - "8001:5000"
+      - "8001:80"
+    expose:
+      - "80"
     networks:
       - app
 
@@ -153,7 +154,7 @@ services:
       - MATTERMOST=mattermost-connector
       - MATTERMOST_PORT=80
       - AI=ai
-      - AI_PORT=5000
+      - AI_PORT=80
       - DB=db
       - DB_USER=dbuser
       - DB_PASS=dbpass

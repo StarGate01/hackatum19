@@ -27,7 +27,6 @@ func SendImageViaWebhook(image Image) bool {
 	mattermostWebHookRequest.Text = ""
 	mattermostWebHookRequest.Channel = "detection"
 	mattermostWebHookRequest.Username = "Detection-Bot"
-	mattermostWebHookRequest.Icon_url = "https://www.myhomebook.de/data/uploads/2019/02/gettyimages-691528312-1040x690.jpg"
 
 	probCache := image.Probability + 1
 	log.Println(probCache)
@@ -36,7 +35,7 @@ func SendImageViaWebhook(image Image) bool {
 	mattermostAttachment.Color = "#ff0000"
 	mattermostAttachment.Text = "You can decide whether the shown image is a defect or not using the buttons showed below. \n" +
 		"Please decide carefully, since your decision has impact on future detections.\n\n ** The picture shows " + strconv.Itoa(probCache) + "% likely a defect. **"
-	mattermostAttachment.ImageUrl = "https://www.myhomebook.de/data/uploads/2019/02/gettyimages-691528312-1040x690.jpg"
+	mattermostAttachment.ImageUrl = "http://localhost:9203/"+image.ID+".jpg"
 	mattermostAttachment.Title = "Defect Detection: Please help identify a defect: "
 
 	mattermostActionYes.Name = "Yes, it is a defect!"
@@ -44,8 +43,6 @@ func SendImageViaWebhook(image Image) bool {
 
 	mattermostIntegrationYes.Url = "http://mattermost-connector/mattermost_callback"
 	mattermostIntegrationNo.Url = "http://mattermost-connector/mattermost_callback"
-	//mattermostIntegrationNo.Url = "http://webhook.site/a1992173-b423-4a3f-b9ec-6ac7c8a3dd3d"
-	//mattermostIntegrationYes.Url = "http://webhook.site/a1992173-b423-4a3f-b9ec-6ac7c8a3dd3d"
 
 	mattermostContextYes.Action = "yes"
 	mattermostContextNo.Action = "no"
@@ -115,7 +112,7 @@ func HandleCallbackFromMattermost(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	url := CORE_URL + mattermostCallback.Context.ImageId + "/rating"
+	url := CORE_URL + "/" + mattermostCallback.Context.ImageId + "/rating"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")

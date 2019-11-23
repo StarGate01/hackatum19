@@ -36,6 +36,11 @@ type PredictRequest struct {
 	Id string `json:"id"`
 }
 
+type TrainRequest struct {
+	Id string `json:"id"`
+	IsCracked int `json:"iscracked"`
+}
+
 type PredictResponse struct {
 	Probability int `json:"probability"`
 }
@@ -55,7 +60,6 @@ func HandlePredictRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func PredictResponseToCore(id string) {
-	log.Println("LOL")
 	time.Sleep(2000)
 	var predictResponse PredictResponse
 	predictResponse.Probability = 32
@@ -66,6 +70,7 @@ func PredictResponseToCore(id string) {
 	}
 
 	url := "http://core:3000/images/" + id + "/probability"
+	log.Println("Post to " + url)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(bytesRepresentation))
 	if err != nil {
 		log.Println(err)
@@ -76,4 +81,10 @@ func PredictResponseToCore(id string) {
 
 func HandleTrainRequest(w http.ResponseWriter, r *http.Request) {
 	log.Println("Handle train request ")
+	var trainRequest TrainRequest
+	err := json.NewDecoder(r.Body).Decode(&trainRequest)
+	if err != nil {
+		log.Println(err)
+	}
+	//TODO @marko check trainRequest bool?
 }
