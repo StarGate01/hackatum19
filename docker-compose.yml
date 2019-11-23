@@ -1,0 +1,51 @@
+version: '3'
+
+networks:
+  app:
+    external:
+      name: app
+
+volumes:
+  postgres-data:
+    driver: local
+
+services:
+  portainer:
+    image: "portainer/portainer:latest"
+    command: -H unix:///var/run/docker.sock --no-auth
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - ./persistent-data/portainer:/data:rw
+    environment:
+      - CAP_HOST_MANAGEMENT=1
+    ports:
+      - "9201:9000"
+
+  db:
+    image: "postgres:latest"
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh:ro
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbpass
+      - POSTGRES_MULTIPLE_DATABASES=mattermost,app
+    expose:
+      - "5432"
+    networks:
+      - app
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pguser
+      PGADMIN_DEFAULT_PASSWORD: pgpass
+    volumes:
+       - ./persistent-data/pgadmin:/root/.pgadmin
+    ports:
+      - "9202:80"
+    networks:
+      - app
