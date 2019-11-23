@@ -21,7 +21,6 @@ export default class Database {
      */
     private db: Sequelize;
     private dbConfig: any;
-    private logger: winston.Logger;
 
     /**
      * @constructor
@@ -30,11 +29,6 @@ export default class Database {
      *  The registry handles everything central.
      */
     constructor(registry: Registry) {
-
-        /**
-         * Create module-base winston logger.
-         */
-        this.logger = registry.loggingSystem.getLogger('DB');
 
         /**
          * Get database configuration, depending on environment.
@@ -74,12 +68,12 @@ export default class Database {
 
         try {
 
-            this.logger.info(`Initialize database configuration:`);
-            this.logger.info(`Host:     ${this.dbConfig.host}`);
-            this.logger.info(`Port:     ${this.dbConfig.port}`);
-            this.logger.info(`Username: ${this.dbConfig.username}`);
-            this.logger.info(`Database: ${this.dbConfig.database}`);
-            this.logger.info(`Schema:   ${this.dbConfig.schema}`);
+            console.log(`Initialize database configuration:`);
+            console.log(`Host:     ${this.dbConfig.host}`);
+            console.log(`Port:     ${this.dbConfig.port}`);
+            console.log(`Username: ${this.dbConfig.username}`);
+            console.log(`Database: ${this.dbConfig.database}`);
+            console.log(`Schema:   ${this.dbConfig.schema}`);
 
             /**
              * Create schema, if not existing yet.
@@ -96,11 +90,11 @@ export default class Database {
             await this.db.addModels([path.join(__dirname, 'models', '**/*.model.js')]);
             await this.db.sync({});
 
-            this.logger.info(`Database initialized\n`);
+            console.log(`Database initialized\n`);
             return this.db;
 
         } catch (err) {
-            this.logger.error('Failed to initialize database.');
+            console.log('Failed to initialize database.');
             throw (err);
         }
 

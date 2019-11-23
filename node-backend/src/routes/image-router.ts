@@ -2,28 +2,19 @@
 // EXTERNAL DEPENDENCIES
 import express from 'express';
 import winston from 'winston';
-import uuidv4 from 'uuid/v4';
-import fs from 'fs';
 import path from 'path';
-
+import rp from 'request-promise';
 
 // INTERNAL DEPENDENCIES
 import Registry from '../app';
 import Image from '../database/models/Image.model';
 import Rating from '../database/models/Rating.model';
-import { UploadedFile } from 'express-fileupload';
 
 export default class Router {
 
-    private logger: winston.Logger;
     private router: express.Router;
 
     constructor(registry: Registry) {
-
-        /**
-         * Initialize module-based logger.
-         */
-        this.logger = registry.loggingSystem.getLogger('IMAGE');
 
         /**
          * Create express router.
@@ -37,7 +28,7 @@ export default class Router {
         // POST /core/images
         this.router.post('/', async (req, res) => {
 
-            this.logger.debug('New image recieved.');
+            console.log('New image recieved.');
 
             const trx = await registry.db.transaction();
 
@@ -57,24 +48,37 @@ export default class Router {
                         return res.status(500).send(err);
                 });
 
+                console.log('Image successful saved.');
+
+                const options = {
+                    method: 'POST',
+                    uri: `http://${process.env.AI}/model/train`,
+                    body: {
+                        id: image.id,
+                    },
+                    json: true
+                };
+                
+                await rp.post(options);
+                console.log('successful sent');
+                
                 await trx.commit();
-                this.logger.info('Image successful saved.');
                 res.sendStatus(200);
 
             } catch (err) {
 
                 await trx.rollback();
-                this.logger.error(err);
+                console.log(err);
                 res.status(400).send(err);
 
             }
 
         })
 
-        // POST /core/image/:id/rating
+        // POST /core/images/:id/rating
         this.router.post('/:id/rating', async (req, res) => {
 
-            this.logger.debug('New rating recieved.');
+            console.log('New rating recieved.');
 
             const trx = await registry.db.transaction();
 
@@ -95,34 +99,49 @@ export default class Router {
                     throw { message: 'Image not found' };
                 }
                 await Rating.create({ imageId: image.id, isCracked }, { transaction: trx });
+                console.log('Rating successful registered.');
+
+                const options = {
+                    method: 'POST',
+                    uri: `http://${process.env.AI}/model/predict`,
+                    body: {
+                        id: image.id,
+                    },
+                    json: true
+                };
+                
+                await rp.post(options);
+                console.log('successful sent');
 
                 await trx.commit();
-                this.logger.info('Rating successful registered.');
                 res.sendStatus(200);
 
             } catch (err) {
 
                 await trx.rollback();
-                this.logger.error(err);
+                console.log(err);
                 res.status(400).send(err);
 
             }
 
         });
+
+        // POST /core/images/:id/probability
+        this.router.post('/:id/probabilty', async(req, res) => {
+
+            console.log('New probabilty recieved.');
+
+            const uri = `http://${process.env.MATTERMOST}/${req.params.id}/probability`;
+            await rp.post(uri);
+
+            console.log('Probability sent.');
+            res.sendStatus(200);
+
+        })
     }
 
     public init(): express.Router {
         return this.router;
     }
 
-}
-
-
-async function createFile(filepath: string, image: any) {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(filepath, image, (err) => {
-            if (err) throw err;
-            console.log('The file has been saved!');
-        });
-    });
 }

@@ -6,7 +6,13 @@ dist
 logs
 
 # contains node packages installed via 'npm install <package>'
-node_modules
+!node_modules/
+node_modules/*
+!node_modules/@types/
+node_modules/@types/*
+!node_modules/@types/validator/
+node_modules/@types/validator/*
+!node_modules/@types/validator/index.d.ts
 
 # environment configfile
 .env

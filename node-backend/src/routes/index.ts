@@ -18,11 +18,6 @@ export default class Router {
         this.mainRouter = express.Router();
 
         /**
-         * Set baseUrl.
-         */
-        registry.app.use('/core', this.mainRouter);
-
-        /**
          * Bind router modules.
          */
         this.mainRouter.use('/images', new ImageRouter(registry).init());
