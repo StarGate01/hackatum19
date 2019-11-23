@@ -58,3 +58,7 @@ type MattermostCallbackAnswerMessage struct {
 	Message     string   `json:"message"`
 	Attachments []string `json:"attachments"`
 }
+
+type CoreRatingRequest struct {
+	IsCracked int `json:"iscracked"`
+}
