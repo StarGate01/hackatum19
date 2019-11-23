@@ -1,3 +1,9 @@
+Build: ./app.sh build
+Run: ./app.sh up
+Shutdown: ./app.sh down
+
+
+
 App:
     Host: http://localhost:9200
 
