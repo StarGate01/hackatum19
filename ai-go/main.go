@@ -82,9 +82,15 @@ func PredictResponseToCore(id string) {
 func HandleTrainRequest(w http.ResponseWriter, r *http.Request) {
 	log.Println("Handle train request ")
 	var trainRequest TrainRequest
+
 	err := json.NewDecoder(r.Body).Decode(&trainRequest)
 	if err != nil {
 		log.Println(err)
 	}
-	//TODO @marko check trainRequest bool?
+
+	if trainRequest.IsCracked != 0 {
+		log.Println(trainRequest.Id + ": yes")
+	} else {
+		log.Println(trainRequest.Id + ": no")
+	}
 }

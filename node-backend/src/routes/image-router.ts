@@ -89,16 +89,16 @@ export default class Router {
                     throw { message: 'invalid id' };
                 }
 
-                let isCracked = true;
-                if (!req.body.isCracked) {
-                    isCracked = false;
+                let isCrackedBool = true;
+                if (!req.body.iscracked) {
+                    isCrackedBool = false;
                 }
 
                 const image = await Image.findOne({ where: { id } });
                 if (!image) {
                     throw { message: 'Image not found' };
                 }
-                await Rating.create({ imageId: image.id, isCracked }, { transaction: trx });
+                await Rating.create({ imageId: image.id, isCracked: isCrackedBool }, { transaction: trx });
                 console.log('Rating registered.');
 
                 const options = {
@@ -106,7 +106,7 @@ export default class Router {
                     uri: `http://${process.env.AI}:${process.env.AI_PORT}/model/train`,
                     body: {
                         id: image.id,
-                        isCracked,
+                        iscracked: req.body.iscracked,
                     },
                     json: true
                 };
