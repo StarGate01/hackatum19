@@ -6,7 +6,7 @@ networks:
       name: app
 
 services:
-  app:
+  mattermost-app:
     build:
       context: mattermost/app
       args:
@@ -26,13 +26,15 @@ services:
     expose:
       - "8000"
     networks:
-      - app
+      app:
+        aliases:
+          - app
 
-  web:
+  mattermost-web:
     build: mattermost/web
     restart: unless-stopped
     depends_on:
-      - app
+      - mattermost-app
     environment:
       - MATTERMOST_ENABLE_SSL=false
     ports:
