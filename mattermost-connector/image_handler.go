@@ -7,8 +7,9 @@ import (
 )
 
 type Image struct {
-	ID       string `json:"id"`
-	FilePath string `json:"filepath"`
+	ID          string `json:"id"`
+	FileName    string `json:"filepath"`
+	Probability int    `json:"probability"`
 }
 
 type StatusRequest struct {
