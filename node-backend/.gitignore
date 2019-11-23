@@ -1,0 +1,12 @@
+
+# 'distribution' folder, contains compiled code/libraries
+dist
+
+# logfiles
+logs
+
+# contains node packages installed via 'npm install <package>'
+node_modules
+
+# environment configfile
+.env
