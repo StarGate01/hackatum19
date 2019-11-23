@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 import random
 
@@ -10,7 +10,8 @@ cors = CORS(app)
 @app.route('/model/predict', methods=['POST'])
 def model_predict():
     r = request.get_json()
-    filepath = r["filepath"]
+    filename = r["filename"]
+    filepath = "/data/images/" + filename
 
     return jsonify({
         "probability": random.randint(0, 99)
@@ -20,8 +21,10 @@ def model_predict():
 @app.route('/model/train', methods=['POST'])
 def model_train():
     r = request.get_json()
-    filepath = r["filepath"]
+    filename = r["filename"]
     is_cracked = r["iscracked"]
+    filepath = "/data/images/" + filename
+
     return "Model trained"
 
 

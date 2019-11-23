@@ -118,6 +118,7 @@ services:
     expose:
       - "5000"
     volumes:
+      - ./ai/app:/code:rw
       - ./persistent-data/images:/data/images:ro
     ports:
       - "8001:5000"
