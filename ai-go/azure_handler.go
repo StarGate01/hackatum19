@@ -152,16 +152,20 @@ func makePrediction(ctx context.Context, projectid uuid.UUID, dataName string) f
 	dataName = dataName + ".jpg"
 
 	testImageData, _ := ioutil.ReadFile(path.Join("/data/images", dataName))
-	results, _ := predictor.ClassifyImage(ctx, projectid, iteration_publish_name, ioutil.NopCloser(bytes.NewReader(testImageData)), "")
+	results, err := predictor.ClassifyImage(ctx, projectid, iteration_publish_name, ioutil.NopCloser(bytes.NewReader(testImageData)), "")
 
 	crackedProb := 0.0
 
-	for _, prediction1 := range *results.Predictions {
-		log.Printf("\t%s: %.2f%%", *prediction1.TagName, *prediction1.Probability*100)
-		log.Println("")
-		if *prediction1.TagName == "cracked" {
-			crackedProb = *prediction1.Probability * 100
+	if(err == nil) {
+		for _, prediction1 := range *results.Predictions {
+			log.Printf("\t%s: %.2f%%", *prediction1.TagName, *prediction1.Probability*100)
+			log.Println("")
+			if *prediction1.TagName == "cracked" {
+				crackedProb = *prediction1.Probability * 100
+			}
 		}
+	} else {
+		log.Println("prediction failed")
 	}
 	// Return the cracked probability
 	log.Println("Cracked Probability")
