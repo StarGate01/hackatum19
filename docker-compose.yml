@@ -6,6 +6,9 @@ networks:
 volumes:
   postgres-data:
     driver: local
+  mattermost:
+    driver: local
+
 
 services:
   portainer:
@@ -58,11 +61,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./persistent-data/mattermost/app/mattermost/config:/mattermost/config:rw
-      - ./persistent-data/mattermost/app/mattermost/data:/mattermost/data:rw
-      - ./persistent-data/mattermost/app/mattermost/logs:/mattermost/logs:rw
-      - ./persistent-data/mattermost/app/mattermost/plugins:/mattermost/plugins:rw
-      - ./persistent-data/mattermost/app/mattermost/client-plugins:/mattermost/client/plugins:rw
+      - mattermost:/mattermost
     env_file:
       - db.env
     environment:
