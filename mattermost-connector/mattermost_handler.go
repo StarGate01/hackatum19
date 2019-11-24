@@ -26,7 +26,7 @@ func SendImageViaWebhook(image Image) bool {
 
 	mattermostAttachment.Pretext = ""
 	mattermostAttachment.Color = "#ff0000"
-	mattermostAttachment.ImageUrl = "http://localhost:9203/" + image.ID + ".jpg"
+	mattermostAttachment.ImageUrl = "http://"+os.Getenv("IMGSERVER_HOST")+":9203/" + image.ID + ".jpg"
 
 	if image.Channel == "detection" {
 		var mattermostActionYes MattermostAction
