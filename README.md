@@ -6,6 +6,9 @@ Written at hackaTUM 2019 by
 - Ilias Sulgin
 - Michael Gigler
 
+## Demo
+http://18.197.54.251:9200
+
 ## Dependencies
 - `docker`
 - `docker-compose`
