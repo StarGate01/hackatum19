@@ -10,13 +10,22 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"net/http"
+	"os"
 )
+
+var TRAINING_KEY = os.Getenv("TRAINING_KEY")
+var ENDPOINT_URL = os.Getenv("ENDPOINT_URL")
+var PROJECT_ID = os.Getenv("PROJECT_ID")
+var PREDICTION_KEY = os.Getenv("PREDICTION_KEY")
+var ENDPOINT = os.Getenv("ENDPOINT")
 
 func main() {
 
 	trainer, ctx, lp, yesTag, noTag, project_id := StartConnectionToAzure()
 
 	r := chi.NewRouter()
+
+	os.Getenv("WEBHOOK_DETECTION")
 
 	// Enable Cors for the Frontend
 	cors := cors.New(cors.Options{

@@ -18,7 +18,7 @@ import (
 
 func StartConnectionToAzure() (training.BaseClient, context.Context, training.Project, training.Tag, training.Tag, *uuid.UUID) {
 	ctx := context.Background()
-	trainer := training.New(training_key, endpoint)
+	trainer := training.New(TRAINING_KEY, ENDPOINT)
 	result, err := trainer.GetProjects(ctx)
 	if err != nil {
 		log.Println(err)
@@ -54,17 +54,6 @@ func StartConnectionToAzure() (training.BaseClient, context.Context, training.Pr
 	}
 
 	return trainer, ctx, lp[0], yesTag, noTag, project_id
-
-	//UploadImagesToAzure(trainer, ctx, lp[0], yesTag, noTag)
-
-	//TagImagesInAzure("32055944-3988-407f-b380-c5adf8ad9fd8")
-
-	//log.Println("Train model ")
-	//TrainModel(trainer, ctx, *project_id)
-
-	//log.Println("Test model")
-	//makePrediction(ctx, *project_id)
-
 }
 
 func UploadImagesToAzure(filename string, trainer training.BaseClient, ctx context.Context, project training.Project, yesTag training.Tag, noTag training.Tag) {
@@ -88,9 +77,9 @@ func TagImagesInAzure(tagId string) {
 	client := &http.Client{}
 
 	// Get the untagged image
-	url := "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/training/projects/0c667159-2b5c-4449-8aa5-a670fb31edd8/images/untagged?take=1"
+	url := ENDPOINT_URL + PROJECT_ID + "/images/untagged?take=1"
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("Training-Key", "284caa38d879463b90d0871031c19958")
+	req.Header.Set("Training-Key", TRAINING_KEY)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
@@ -123,9 +112,9 @@ func TagImagesInAzure(tagId string) {
 		log.Println(err)
 	}
 
-	url = "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/training/projects/0c667159-2b5c-4449-8aa5-a670fb31edd8/images/tags"
+	url = ENDPOINT_URL + PROJECT_ID + "/images/tags"
 	req, _ = http.NewRequest("POST", url, bytes.NewBuffer(bytesRepresentation))
-	req.Header.Set("Training-Key", "284caa38d879463b90d0871031c19958")
+	req.Header.Set("Training-Key", TRAINING_KEY)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err4 := client.Do(req)
@@ -158,7 +147,7 @@ func TrainModel(trainer training.BaseClient, ctx context.Context, projectid uuid
 
 func makePrediction(ctx context.Context, projectid uuid.UUID, dataName string) float64 {
 	log.Println("Predicting...")
-	predictor := prediction.New(prediction_key, endpoint)
+	predictor := prediction.New(PREDICTION_KEY, ENDPOINT)
 
 	dataName = dataName + ".jpg"
 

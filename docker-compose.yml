@@ -118,6 +118,8 @@ services:
       - ./persistent-data/images:/data/images:ro
     working_dir: /go/src/ai-go
     command: sh -c "go run *.go"
+    env_file:
+      - azure.env
     expose:
       - "80"
     networks:

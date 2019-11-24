@@ -50,3 +50,8 @@ System Console -> Developer:
 ## Configuration
 
 Edit `core.env` to configure thresholds, `db.env` to configure the database access.
+Edit `azure.env` to configure the Azure Accounts
+
+
+## The Images that should be sent by the Camera
+Place them in `./persistent-data/mock`, the `images` folder is for the already predicted images. 
