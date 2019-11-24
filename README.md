@@ -13,12 +13,22 @@ Written at hackaTUM 2019 by
 
 ## Deployment 
 
+Outgoing ports:
+- Mattermost: http://localhost:9200/
+- Portainer: http://localhost:9201/
+- PgAdmin: http://localhost:9202/
+- Image server: http://localhost:9203/
+
+
+
 - (Chmod: `chmod +x app.sh`)
 - Build: `./app.sh build`
 - Deploy: `./app.sh up`
 - Shutdown `./app.sh down`
 
-## Mattermost setup for testing
+## Mattermost setup for testing localhost:9200
+
+Go to http://localhost:9200: 
 
 Credentials: 
 - Admin-Account: 
@@ -55,3 +65,15 @@ Edit `azure.env` to configure the Azure Accounts
 
 ## The Images that should be sent by the Camera
 Place them in `./persistent-data/mock`, the `images` folder is for the already predicted images. 
+
+
+## Microsoft Azure Custom Vision
+Visit https://www.customvision.ai/
+
+- Create project 
+- Create resource
+- Create tags:
+    - cracked
+    - uncracked
+    
+Train with some cracked and uncracked images    
